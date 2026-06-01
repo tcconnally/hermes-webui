@@ -4667,3 +4667,122 @@ main.main.showing-logs > #mainLogs{display:flex;}
 @media (min-width:1600px) {
   .composer-box{max-width:1600px;margin:0 auto;}
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   Perseus Skin — Cyberpunk x Readable
+   Dark base with electric purple/cyan accents. High contrast for
+   readability, neon glow for atmosphere. Easy on the eyes.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Light mode ── */
+:root[data-skin="perseus"]{
+  --bg:#F8F6FA;--sidebar:#F0EDF5;--border:#D8D0E8;--border2:rgba(179,71,255,0.15);
+  --text:#1A1525;--muted:#6B6080;--accent:#8B2FC9;--blue:#8B2FC9;--gold:#B347FF;--code-bg:#EDE8F5;
+  --surface:#FFFFFF;--topbar-bg:rgba(248,246,250,.98);--main-bg:rgba(248,246,250,0.5);
+  --focus-ring:rgba(139,47,201,.3);--focus-glow:rgba(139,47,201,.08);
+  --input-bg:rgba(139,47,201,.03);--hover-bg:rgba(139,47,201,.05);
+  --strong:#0D0A15;--em:#4A3A6A;--code-text:#6B20B0;--code-inline-bg:rgba(139,47,201,.08);--pre-text:#1A1525;
+  --accent-hover:#7A1FB8;--accent-bg:rgba(139,47,201,0.06);--accent-bg-strong:rgba(139,47,201,0.12);--accent-text:#6B20B0;
+  --error:#C62828;--success:#2E7D32;--warning:#E65100;--info:#8B2FC9;
+  --radius-sm:3px;--radius-md:5px;--radius-card:6px;--radius-lg:8px;
+  --font-ui:"JetBrains Mono","Fira Code","Cascadia Code","SF Mono",monospace;
+  --surface-subtle:rgba(139,47,201,.02);--surface-subtle-hover:rgba(139,47,201,.05);
+  --border-subtle:rgba(139,47,201,.08);--border-muted:rgba(139,47,201,.14);
+  font-family:var(--font-ui);font-size:14px;line-height:1.65;
+}
+
+/* ── Dark mode — the Perseus aesthetic ── */
+:root.dark[data-skin="perseus"]{
+  --bg:#06040A;--sidebar:#08060D;--border:#1E1535;--border2:rgba(179,71,255,0.18);
+  --text:#D4CCE8;--muted:#6B5E8A;--accent:#B347FF;--blue:#B347FF;--gold:#00DDFF;--code-bg:#0E0A18;
+  --surface:#0C0818;--topbar-bg:rgba(6,4,10,.96);--main-bg:rgba(6,4,10,0.5);
+  --focus-ring:rgba(179,71,255,.35);--focus-glow:rgba(179,71,255,.10);
+  --input-bg:rgba(179,71,255,.04);--hover-bg:rgba(179,71,255,.06);
+  --strong:#EDE8F5;--em:#8B7AAA;--code-text:#C98BFF;--code-inline-bg:rgba(179,71,255,.12);--pre-text:#D4CCE8;
+  --accent-hover:#C56BFF;--accent-bg:rgba(179,71,255,0.08);--accent-bg-strong:rgba(179,71,255,0.16);--accent-text:#C98BFF;
+  --error:#FF5252;--success:#00E676;--warning:#FFAB40;--info:#00DDFF;
+  --surface-subtle:rgba(179,71,255,.025);--surface-subtle-hover:rgba(179,71,255,.05);
+  --border-subtle:rgba(179,71,255,.08);--border-muted:rgba(179,71,255,.14);
+}
+
+/* ── Component overrides: Perseus dark ── */
+:root.dark[data-skin="perseus"] .topbar{
+  border-bottom:1px solid rgba(179,71,255,0.2);
+  box-shadow:0 1px 12px rgba(179,71,255,0.08);
+}
+:root.dark[data-skin="perseus"] .sidebar{
+  border-right:1px solid rgba(179,71,255,0.1);
+}
+:root.dark[data-skin="perseus"] #btnSend{
+  box-shadow:0 0 10px rgba(179,71,255,0.15);
+}
+:root.dark[data-skin="perseus"] #btnSend:hover{
+  box-shadow:0 0 18px rgba(179,71,255,0.25);
+}
+:root.dark[data-skin="perseus"] textarea#msg:focus{
+  box-shadow:0 0 14px rgba(179,71,255,0.12);
+}
+:root[data-skin="perseus"] ::selection{
+  background:rgba(179,71,255,0.25);color:#EDE8F5;
+}
+:root.dark[data-skin="perseus"] ::selection{
+  background:rgba(179,71,255,0.3);color:#FFFFFF;
+}
+/* Scrollbar */
+:root.dark[data-skin="perseus"]::-webkit-scrollbar-thumb{
+  background:rgba(179,71,255,.22);border-radius:4px;
+}
+:root.dark[data-skin="perseus"]::-webkit-scrollbar-thumb:hover{
+  background:rgba(179,71,255,.4);
+}
+:root.dark[data-skin="perseus"]{
+  scrollbar-width:thin;scrollbar-color:rgba(179,71,255,.22) transparent;
+}
+/* Tool cards */
+:root.dark[data-skin="perseus"] .tool-card{
+  border:1px solid rgba(179,71,255,0.08);
+}
+:root.dark[data-skin="perseus"] .tool-card:hover{
+  border-color:rgba(179,71,255,0.18);
+  box-shadow:0 0 8px rgba(179,71,255,0.06);
+}
+/* Session badges */
+:root.dark[data-skin="perseus"] .session-badge{
+  border:1px solid rgba(179,71,255,0.12);
+}
+/* Links */
+:root.dark[data-skin="perseus"] a{
+  color:var(--accent);
+}
+:root.dark[data-skin="perseus"] a:hover{
+  color:var(--accent-hover);
+  text-shadow:0 0 6px rgba(179,71,255,0.2);
+}
+/* Code blocks */
+:root.dark[data-skin="perseus"] pre{
+  border:1px solid rgba(179,71,255,0.08);
+  border-radius:var(--radius-md);
+}
+/* MCP status indicators */
+:root.dark[data-skin="perseus"] .mcp-status-dot.connected{
+  box-shadow:0 0 6px rgba(0,221,255,0.4);
+}
+/* Diff blocks */
+:root.dark[data-skin="perseus"] .diff-add{
+  background:rgba(0,230,118,0.08);
+}
+:root.dark[data-skin="perseus"] .diff-remove{
+  background:rgba(255,82,82,0.08);
+}
+/* Image lightbox */
+:root.dark[data-skin="perseus"] .img-lightbox:hover{
+  box-shadow:0 0 20px rgba(179,71,255,0.15);
+}
+/* Hide scrollbar from textarea */
+:root.dark[data-skin="perseus"] textarea#msg{
+  scrollbar-width:none;overflow-y:auto;
+}
+:root.dark[data-skin="perseus"] textarea#msg::-webkit-scrollbar{
+  display:none;
+}

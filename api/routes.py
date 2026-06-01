@@ -4154,6 +4154,20 @@ def handle_get(handler, parsed) -> bool:
         j(handler, build_system_health_payload())
         return True
 
+    # ── Perseus Context Engine (GET) ──
+    if parsed.path == "/api/perseus/context":
+        from api.perseus_context import get_context
+        workspace = parse_qs(parsed.query).get("workspace", [None])[0]
+        return j(handler, get_context(workspace))
+
+    if parsed.path == "/api/perseus/health":
+        from api.perseus_context import get_health
+        return j(handler, get_health())
+
+    if parsed.path == "/api/perseus/services":
+        from api.perseus_context import get_services
+        return j(handler, get_services())
+
     if parsed.path == "/api/models":
         return j(handler, get_available_models())
 

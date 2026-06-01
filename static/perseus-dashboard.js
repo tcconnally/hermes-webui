@@ -76,6 +76,7 @@ class PerseusDashboard {
         await this._loadWorkspaces();
         this._switchTab('context');
         this._startPolling();
+        this._pollHealth();
     }
 
     _wireEvents() {
@@ -479,7 +480,7 @@ class PerseusDashboard {
                     await window.createSession();
                 } else {
                     // Fallback: trigger new session via API
-                    var resp = await fetch('/api/session/new', {
+                    var resp = await fetch('/api/session/perseus-new', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
@@ -502,6 +503,26 @@ class PerseusDashboard {
             btn.textContent = '⚠ Error';
             setTimeout(function() { btn.textContent = '⚡+Context'; btn.disabled = false; }, 2000);
         }
+    }
+
+    async _pollHealth() {
+        var self = this;
+        var status = document.getElementById('pd-status');
+        try {
+            var resp = await fetch('/api/perseus/health');
+            var data = await resp.json();
+            if (data.status === 'ok') {
+                status.className = 'pd-status ok';
+                status.title = 'Perseus healthy';
+            } else {
+                status.className = 'pd-status warning';
+                status.title = data.error || 'Perseus warning';
+            }
+        } catch(e) {
+            status.className = 'pd-status error';
+            status.title = 'Perseus unreachable';
+        }
+        setTimeout(function() { self._pollHealth(); }, 300000);
     }
 
     _esc(str) {

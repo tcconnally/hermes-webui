@@ -1546,6 +1546,16 @@
         .pd-status.ok { color: var(--success); }
         .pd-status.error { color: var(--error); }
         .pd-status.warning { color: var(--warning); }
+        .pd-coldstart-btn {
+            background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+            color: #fff; border: none; border-radius: var(--radius-sm);
+            padding: 0.2rem 0.5rem; font-size: 0.62rem; font-weight: 600;
+            font-family: inherit; cursor: pointer; white-space: nowrap;
+            transition: opacity 0.15s;
+            margin-left: 0.3rem;
+        }
+        .pd-coldstart-btn:hover { opacity: 0.85; }
+        .pd-coldstart-btn:disabled { opacity: 0.5; cursor: default; }
 
         /* Tabs */
         .pd-tabs {

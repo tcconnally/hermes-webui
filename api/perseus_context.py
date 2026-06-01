@@ -137,39 +137,35 @@ def get_services(workspace: Optional[str] = None) -> Dict[str, Any]:
 
 
 def _parse_services_block(content: str) -> List[Dict[str, Any]]:
-    """Parse @services YAML block from context.md."""
+    """Parse @services YAML block from context.md — no yaml dependency."""
     services = []
     in_block = False
-    yaml_lines = []
+    current = {}
     
     for line in content.split("\n"):
-        if line.strip().startswith("@services"):
+        stripped = line.strip()
+        if stripped.startswith("@services"):
             in_block = True
-            yaml_lines = []
             continue
-        if in_block:
-            if line.strip().startswith("@end") or (line.strip() and not line.startswith((" ", "-", "  ")) and not line.strip().startswith("#")):
-                # End of YAML block
-                break
-            yaml_lines.append(line)
+        if not in_block:
+            continue
+        if stripped.startswith("@end"):
+            if current:
+                services.append(current)
+            break
+        if stripped.startswith("- name:"):
+            if current:
+                services.append(current)
+            current = {"name": stripped.split(":", 1)[1].strip(), "command": "", "url": "", "warn_on_error": False}
+        elif stripped.startswith("command:") and current:
+            current["command"] = stripped.split(":", 1)[1].strip().strip('"')
+        elif stripped.startswith("url:") and current:
+            current["url"] = stripped.split(":", 1)[1].strip()
+        elif stripped.startswith("warn_on_error:") and current:
+            current["warn_on_error"] = "true" in stripped.lower()
     
-    # Parse the collected YAML lines
-    import yaml as yaml_mod
-    yaml_str = "\n".join(yaml_lines)
-    try:
-        parsed = yaml_mod.safe_load(yaml_str)
-        if isinstance(parsed, list):
-            for item in parsed:
-                if isinstance(item, dict):
-                    svc = {
-                        "name": item.get("name", "Unknown"),
-                        "command": item.get("command", ""),
-                        "url": item.get("url", ""),
-                        "warn_on_error": item.get("warn_on_error", False),
-                    }
-                    services.append(svc)
-    except Exception:
-        pass
+    if current and current.get("name"):
+        services.append(current)
     
     return services
 
@@ -364,9 +360,13 @@ def get_sessions(workspace: Optional[str] = None, limit: int = 20) -> Dict[str, 
         if checkpoints_dir.is_dir():
             for cp_file in sorted(checkpoints_dir.glob("*.yaml"), reverse=True)[:10]:
                 try:
-                    import yaml as yaml_mod
                     with open(cp_file) as f:
-                        cp = yaml_mod.safe_load(f)
+                        cp_text = f.read()
+                    cp = {}
+                    for cp_line in cp_text.split("\n"):
+                        if ":" in cp_line:
+                            k, v = cp_line.split(":", 1)
+                            cp[k.strip()] = v.strip().strip('"')
                     waypoints.append({
                         "timestamp": cp.get("timestamp", ""),
                         "task": cp.get("task", ""),
@@ -444,10 +444,14 @@ def _parse_task_file(name: str, content: str) -> Dict[str, Any]:
         end = content.find("\n---", 3)
         if end > 0:
             try:
-                import yaml as yaml_mod
-                fm = yaml_mod.safe_load(content[4:end])
-                if isinstance(fm, dict):
-                    task.update({k: v for k, v in fm.items() if v is not None})
+                fm_text = content[4:end]
+                for fm_line in fm_text.split("\n"):
+                    if ":" in fm_line and not fm_line.strip().startswith("#"):
+                        k, v = fm_line.split(":", 1)
+                        k = k.strip()
+                        v = v.strip().strip('"')
+                        if k and v:
+                            task[k] = v
             except Exception:
                 pass
     

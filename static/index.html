@@ -1495,141 +1495,223 @@
   </div>
 </div>
 
-    <!-- Perseus Context Panel 🪞 — uses CSS custom properties, adapts to any skin -->
+    <!-- ═══════════════════════════════════════════════════════════════
+     Perseus Dashboard 🪞 — Multi-tab workspace intelligence
+     Uses CSS custom properties — adapts to any skin automatically.
+     ═══════════════════════════════════════════════════════════════ -->
     <style>
-        .perseus-panel {
+        .perseus-dashboard {
             margin: 0.5rem 0 1rem 0;
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-card);
             background: var(--surface);
             overflow: hidden;
-            transition: all 0.2s ease;
         }
-        .perseus-panel:hover {
-            border-color: var(--accent-bg-strong);
-        }
-        .perseus-header {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        .perseus-dashboard:hover { border-color: var(--accent-bg-strong); }
+        .perseus-collapsed .pd-tabs,
+        .perseus-collapsed .pd-body { display: none; }
+
+        /* Header */
+        .pd-header {
+            display: flex; align-items: center; gap: 0.5rem;
             padding: 0.5rem 0.75rem;
             background: var(--sidebar);
             border-bottom: 1px solid var(--border-subtle);
-            cursor: default;
             user-select: none;
         }
-        .perseus-toggle {
-            font-size: 1rem;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: opacity 0.15s, transform 0.2s;
-            padding: 2px;
+        .pd-toggle {
+            font-size: 1rem; cursor: pointer; opacity: 0.6;
+            transition: opacity 0.15s, transform 0.2s; padding: 2px;
         }
-        .perseus-toggle:hover { opacity: 1; }
-        .perseus-collapsed .perseus-toggle { transform: rotate(-90deg); }
-        .perseus-title {
-            font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--accent);
-            letter-spacing: 0.03em;
+        .pd-toggle:hover { opacity: 1; }
+        .perseus-collapsed .pd-toggle { transform: rotate(-90deg); }
+        .pd-title {
+            font-weight: 600; font-size: 0.85rem;
+            color: var(--accent); letter-spacing: 0.03em;
         }
-        .perseus-ws-select {
-            background: var(--input-bg);
-            color: var(--text);
+        .pd-ws-select {
+            background: var(--input-bg); color: var(--text);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-sm);
-            padding: 0.2rem 0.4rem;
-            font-size: 0.78rem;
-            font-family: inherit;
-            max-width: 180px;
-            cursor: pointer;
+            padding: 0.2rem 0.4rem; font-size: 0.75rem;
+            font-family: inherit; max-width: 220px; cursor: pointer;
         }
-        .perseus-ws-select:focus {
-            outline: none;
-            border-color: var(--accent);
+        .pd-ws-select:focus {
+            outline: none; border-color: var(--accent);
             box-shadow: 0 0 0 2px var(--focus-ring);
         }
-        .perseus-status {
-            font-size: 0.65rem;
-            margin-left: auto;
-            transition: color 0.3s;
+        .pd-status {
+            font-size: 0.6rem; margin-left: auto; transition: color 0.3s;
         }
-        .perseus-status.ok { color: var(--success); }
-        .perseus-status.error { color: var(--error); }
-        .perseus-status.warning { color: var(--warning); }
-        .perseus-status.loading { color: var(--muted); animation: perseus-pulse 1.2s infinite; }
-        @keyframes perseus-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-        .perseus-body {
-            padding: 0.75rem;
-            max-height: 350px;
-            overflow-y: auto;
-            font-size: 0.82rem;
-            line-height: 1.55;
-            color: var(--text);
-        }
-        .perseus-collapsed .perseus-body { display: none; }
-        .perseus-body h2 { font-size: 1rem; margin: 0.6rem 0 0.3rem; color: var(--strong); }
-        .perseus-body h3 { font-size: 0.9rem; margin: 0.5rem 0 0.2rem; color: var(--accent); }
-        .perseus-body h4 { font-size: 0.85rem; margin: 0.4rem 0 0.2rem; color: var(--em); }
-        .perseus-body h5 { font-size: 0.8rem; margin: 0.3rem 0 0.15rem; color: var(--muted); }
-        .perseus-body pre {
-            background: var(--code-bg);
-            padding: 0.5rem;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-subtle);
-            overflow-x: auto;
-            font-size: 0.75rem;
-            margin: 0.3rem 0;
-        }
-        .perseus-body code {
-            background: var(--code-inline-bg);
-            color: var(--code-text);
-            padding: 0.1rem 0.3rem;
-            border-radius: 3px;
-            font-size: 0.8rem;
-        }
-        .perseus-body pre code {
-            background: none;
-            color: var(--pre-text);
-            padding: 0;
-        }
-        .perseus-body blockquote {
-            border-left: 2px solid var(--accent);
-            margin: 0.3rem 0;
-            padding: 0.2rem 0.6rem;
-            color: var(--muted);
-            font-style: italic;
-        }
-        .perseus-body hr {
-            border: none;
-            border-top: 1px solid var(--border-subtle);
-            margin: 0.5rem 0;
-        }
-        .perseus-body table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.78rem;
-            margin: 0.3rem 0;
-        }
-        .perseus-body th, .perseus-body td {
-            padding: 0.25rem 0.5rem;
+        .pd-status.ok { color: var(--success); }
+        .pd-status.error { color: var(--error); }
+        .pd-status.warning { color: var(--warning); }
+
+        /* Tabs */
+        .pd-tabs {
+            display: flex; gap: 0;
+            background: var(--sidebar);
             border-bottom: 1px solid var(--border-subtle);
-            text-align: left;
+            padding: 0 0.5rem;
         }
-        .perseus-body th {
-            color: var(--muted);
-            font-weight: 600;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .pd-tab {
+            background: none; border: none; border-bottom: 2px solid transparent;
+            color: var(--muted); padding: 0.4rem 0.75rem;
+            font-size: 0.75rem; font-family: inherit; cursor: pointer;
+            transition: all 0.15s; white-space: nowrap;
         }
-        .perseus-body .svc-ok { color: var(--success); }
-        .perseus-body .svc-err { color: var(--error); }
-        .perseus-body .svc-warn { color: var(--warning); }
-        .perseus-error { color: var(--error); padding: 0.5rem 0; }
-        .perseus-note { color: var(--muted); font-style: italic; padding: 0.5rem 0; }
-        .perseus-loading { color: var(--muted); padding: 0.5rem 0; }
-        .perseus-context { word-break: break-word; }
+        .pd-tab:hover { color: var(--text); }
+        .pd-tab.active {
+            color: var(--accent); border-bottom-color: var(--accent);
+        }
+
+        /* Body */
+        .pd-body {
+            padding: 0.75rem; max-height: 400px; overflow-y: auto;
+            font-size: 0.8rem; line-height: 1.5; color: var(--text);
+        }
+        .pd-tab-content { display: none; }
+        .pd-tab-content.active { display: block; }
+
+        /* Shared components */
+        .pd-loading { color: var(--muted); padding: 0.5rem 0; }
+        .pd-error { color: var(--error); padding: 0.5rem 0; }
+        .pd-note { color: var(--muted); font-style: italic; padding: 0.5rem 0; }
+
+        /* Context rendering */
+        .pd-context h2 { font-size: 1rem; margin: 0.5rem 0 0.2rem; color: var(--strong); }
+        .pd-context h3 { font-size: 0.9rem; margin: 0.4rem 0 0.15rem; color: var(--accent); }
+        .pd-context h4 { font-size: 0.85rem; margin: 0.3rem 0 0.1rem; color: var(--em); }
+        .pd-context h5 { font-size: 0.8rem; color: var(--muted); }
+        .pd-context pre {
+            background: var(--code-bg); padding: 0.5rem;
+            border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);
+            overflow-x: auto; font-size: 0.72rem; margin: 0.3rem 0;
+        }
+        .pd-context code {
+            background: var(--code-inline-bg); color: var(--code-text);
+            padding: 0.1rem 0.3rem; border-radius: 3px; font-size: 0.78rem;
+        }
+        .pd-context pre code { background: none; color: var(--pre-text); padding: 0; }
+        .pd-context blockquote {
+            border-left: 2px solid var(--accent); margin: 0.2rem 0;
+            padding: 0.15rem 0.5rem; color: var(--muted); font-style: italic;
+        }
+        .pd-context hr { border: none; border-top: 1px solid var(--border-subtle); margin: 0.4rem 0; }
+
+        /* Tables */
+        .pd-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin: 0.3rem 0; }
+        .pd-table th, .pd-table td {
+            padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border-subtle); text-align: left;
+        }
+        .pd-table th {
+            color: var(--muted); font-weight: 600; font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .pd-mono { font-family: var(--font-ui, monospace); font-size: 0.7rem; }
+
+        /* Service status */
+        .svc-ok { color: var(--success); }
+        .svc-err { color: var(--error); }
+        .svc-warn { color: var(--warning); }
+        .pd-services-summary { margin-bottom: 0.5rem; }
+        .pd-badge {
+            display: inline-block; padding: 0.15rem 0.5rem; border-radius: 3px;
+            font-size: 0.7rem; font-weight: 600; margin-right: 0.3rem;
+        }
+        .pd-badge.ok { background: rgba(0,230,118,0.1); color: var(--success); }
+        .pd-badge.err { background: rgba(255,82,82,0.1); color: var(--error); }
+
+        /* Memory search */
+        .pd-memory-search { display: flex; gap: 0.3rem; margin-bottom: 0.5rem; }
+        .pd-search-input {
+            flex: 1; background: var(--input-bg); color: var(--text);
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+            padding: 0.35rem 0.5rem; font-size: 0.78rem; font-family: inherit;
+        }
+        .pd-search-input:focus {
+            outline: none; border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--focus-ring);
+        }
+        .pd-search-btn {
+            background: var(--accent); color: #fff; border: none;
+            border-radius: var(--radius-sm); padding: 0.35rem 0.6rem;
+            cursor: pointer; font-size: 0.8rem;
+        }
+        .pd-search-btn:hover { background: var(--accent-hover); }
+        .pd-results-count { color: var(--muted); font-size: 0.7rem; margin-bottom: 0.3rem; }
+        .pd-memory-card {
+            padding: 0.4rem 0.5rem; margin-bottom: 0.3rem;
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+            background: var(--surface-subtle);
+        }
+        .pd-memory-title { font-weight: 600; font-size: 0.8rem; margin-bottom: 0.15rem; }
+        .pd-memory-snippet { font-size: 0.75rem; color: var(--text); line-height: 1.4; }
+        .pd-memory-snippet mark { background: var(--accent-bg-strong); color: var(--accent-text); }
+        .pd-memory-meta { margin-top: 0.2rem; }
+        .pd-tag {
+            display: inline-block; padding: 0.1rem 0.35rem;
+            background: var(--accent-bg); color: var(--accent-text);
+            border-radius: 3px; font-size: 0.65rem; margin-right: 0.2rem;
+        }
+
+        /* Timeline */
+        .pd-section-title {
+            font-size: 0.78rem; color: var(--accent); margin: 0.5rem 0 0.3rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .pd-timeline-item {
+            display: flex; gap: 0.5rem; padding: 0.3rem 0; align-items: flex-start;
+        }
+        .pd-timeline-dot {
+            width: 8px; height: 8px; border-radius: 50%; margin-top: 4px;
+            background: var(--border); flex-shrink: 0;
+        }
+        .pd-timeline-dot.wp { background: var(--accent); box-shadow: 0 0 4px var(--accent); }
+        .pd-timeline-item.active .pd-timeline-dot {
+            background: var(--success); box-shadow: 0 0 4px var(--success);
+        }
+        .pd-timeline-content { flex: 1; min-width: 0; }
+        .pd-timeline-title { font-size: 0.78rem; font-weight: 500; }
+        .pd-timeline-meta { font-size: 0.7rem; color: var(--muted); }
+
+        /* Tasks */
+        .pd-task-filters { display: flex; gap: 0.2rem; margin-bottom: 0.5rem; }
+        .pd-filter {
+            background: var(--surface-subtle); color: var(--muted);
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+            padding: 0.25rem 0.6rem; font-size: 0.7rem; font-family: inherit; cursor: pointer;
+        }
+        .pd-filter:hover { color: var(--text); border-color: var(--border); }
+        .pd-filter.active {
+            background: var(--accent-bg); color: var(--accent-text);
+            border-color: var(--accent);
+        }
+        .pd-task-counts { margin-bottom: 0.5rem; }
+        .pd-count {
+            display: inline-block; padding: 0.15rem 0.4rem; border-radius: 3px;
+            font-size: 0.68rem; font-weight: 600; margin-right: 0.3rem;
+        }
+        .pd-count.open { background: var(--accent-bg); color: var(--accent-text); }
+        .pd-count.active { background: rgba(255,171,64,0.1); color: var(--warning); }
+        .pd-count.done { background: rgba(0,230,118,0.1); color: var(--success); }
+        .pd-task-card {
+            padding: 0.4rem 0.5rem; margin-bottom: 0.3rem;
+            border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+            background: var(--surface-subtle);
+        }
+        .pd-task-header { display: flex; gap: 0.3rem; margin-bottom: 0.15rem; }
+        .pd-task-status {
+            font-size: 0.62rem; font-weight: 600; text-transform: uppercase;
+            padding: 0.1rem 0.3rem; border-radius: 2px;
+        }
+        .pd-task-status.open { background: var(--accent-bg); color: var(--accent-text); }
+        .pd-task-status.active { background: rgba(255,171,64,0.12); color: var(--warning); }
+        .pd-task-status.done { background: rgba(0,230,118,0.08); color: var(--success); }
+        .pd-task-scope { font-size: 0.65rem; color: var(--muted); }
+        .pd-task-title { font-size: 0.8rem; font-weight: 500; }
+        .pd-task-summary { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+        .pd-task-assignee { font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
     </style>
-    <script src="static/perseus-panel.js?v=__WEBUI_VERSION__"></script>
+    <script src="static/perseus-dashboard.js?v=__WEBUI_VERSION__"></script>
 </body>

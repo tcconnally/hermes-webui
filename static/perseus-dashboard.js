@@ -29,7 +29,7 @@ class PerseusDashboard {
                 '<select class="pd-ws-select" id="pd-ws-select">' +
                     '<option value="">Discovering...</option>' +
                 '</select>' +
-                '<span class="pd-status" id="pd-status" title="Dashboard freshness">●</span>' +
+                '<span class="pd-status" id="pd-status" title="Dashboard freshness">●</span><button class="pd-coldstart-btn" id="pd-coldstart" title="New session with Perseus context pre-loaded">⚡+Context</button>' +
             '</div>' +
             '<div class="pd-tabs" id="pd-tabs">' +
                 '<button class="pd-tab active" data-tab="context">Context</button>' +
@@ -109,6 +109,10 @@ class PerseusDashboard {
         searchInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') self._searchMemory();
         });
+
+        // Cold-start button
+        var coldBtn = this.container.querySelector('#pd-coldstart');
+        coldBtn.addEventListener('click', function() { self._coldStartSession(); });
 
         // Task filters
         var filters = this.container.querySelectorAll('.pd-filter');
@@ -451,6 +455,53 @@ class PerseusDashboard {
             if (diff < 86400) return Math.round(diff / 3600) + 'h ago';
             return Math.round(diff / 86400) + 'd ago';
         } catch (e) { return ''; }
+    }
+
+    // ── F: Cold-Start Killer ──
+    async _coldStartSession() {
+        var btn = document.getElementById('pd-coldstart');
+        btn.textContent = '...';
+        btn.disabled = true;
+        try {
+            // Get context injection
+            var injUrl = '/api/perseus/inject' + (this.activeWorkspace ? '?workspace=' + encodeURIComponent(this.activeWorkspace) : '');
+            var injResp = await fetch(injUrl);
+            var injData = await injResp.json();
+            
+            if (injData.injection) {
+                // Store injection for next session creation
+                localStorage.setItem('perseus-context-injection', injData.injection);
+                localStorage.setItem('perseus-context-workspace', injData.workspace || '');
+                
+                // Create a new session (use existing WebUI session creation if available)
+                // The context will be injected via the session creation flow
+                if (typeof window.createSession === 'function') {
+                    await window.createSession();
+                } else {
+                    // Fallback: trigger new session via API
+                    var resp = await fetch('/api/session/new', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            workspace: injData.workspace || this.activeWorkspace || ''
+                        })
+                    });
+                    var data = await resp.json();
+                    if (data.session && data.session.session_id) {
+                        window.location.href = '/session/' + data.session.session_id;
+                    }
+                }
+                
+                btn.textContent = '✓ Session created';
+                setTimeout(function() { btn.textContent = '⚡+Context'; btn.disabled = false; }, 2000);
+            } else {
+                btn.textContent = '⚠ No context';
+                setTimeout(function() { btn.textContent = '⚡+Context'; btn.disabled = false; }, 2000);
+            }
+        } catch (e) {
+            btn.textContent = '⚠ Error';
+            setTimeout(function() { btn.textContent = '⚡+Context'; btn.disabled = false; }, 2000);
+        }
     }
 
     _esc(str) {

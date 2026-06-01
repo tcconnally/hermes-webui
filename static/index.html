@@ -1495,70 +1495,141 @@
   </div>
 </div>
 
-    <!-- Perseus Context Panel -->
+    <!-- Perseus Context Panel 🪞 — uses CSS custom properties, adapts to any skin -->
     <style>
         .perseus-panel {
-            margin: 1rem 0;
-            border: 1px solid var(--border);
-            border-radius: 8px;
+            margin: 0.5rem 0 1rem 0;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-card);
             background: var(--surface);
             overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .perseus-panel:hover {
+            border-color: var(--accent-bg-strong);
         }
         .perseus-header {
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.75rem 1rem;
+            padding: 0.5rem 0.75rem;
             background: var(--sidebar);
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid var(--border-subtle);
+            cursor: default;
+            user-select: none;
         }
-        .perseus-icon { font-size: 1.2rem; }
-        .perseus-title { font-weight: 600; flex: 1; }
+        .perseus-toggle {
+            font-size: 1rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.15s, transform 0.2s;
+            padding: 2px;
+        }
+        .perseus-toggle:hover { opacity: 1; }
+        .perseus-collapsed .perseus-toggle { transform: rotate(-90deg); }
+        .perseus-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.03em;
+        }
         .perseus-ws-select {
             background: var(--input-bg);
             color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.85rem;
-            max-width: 200px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 0.2rem 0.4rem;
+            font-size: 0.78rem;
+            font-family: inherit;
+            max-width: 180px;
+            cursor: pointer;
         }
-        .perseus-status { font-size: 0.8rem; }
+        .perseus-ws-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px var(--focus-ring);
+        }
+        .perseus-status {
+            font-size: 0.65rem;
+            margin-left: auto;
+            transition: color 0.3s;
+        }
         .perseus-status.ok { color: var(--success); }
-        .perseus-status.error { color: var(--error, #ef4444); }
-        .perseus-status.warning { color: var(--warning, #f59e0b); }
-        .perseus-status.loading { color: var(--muted); animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .perseus-status.error { color: var(--error); }
+        .perseus-status.warning { color: var(--warning); }
+        .perseus-status.loading { color: var(--muted); animation: perseus-pulse 1.2s infinite; }
+        @keyframes perseus-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
         .perseus-body {
-            padding: 1rem;
-            max-height: 400px;
+            padding: 0.75rem;
+            max-height: 350px;
             overflow-y: auto;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.82rem;
+            line-height: 1.55;
+            color: var(--text);
         }
-        .perseus-body h2 { font-size: 1.1rem; margin: 0.5rem 0; }
-        .perseus-body h3 { font-size: 1rem; margin: 0.5rem 0; color: var(--accent); }
-        .perseus-body h4 { font-size: 0.9rem; margin: 0.5rem 0; }
+        .perseus-collapsed .perseus-body { display: none; }
+        .perseus-body h2 { font-size: 1rem; margin: 0.6rem 0 0.3rem; color: var(--strong); }
+        .perseus-body h3 { font-size: 0.9rem; margin: 0.5rem 0 0.2rem; color: var(--accent); }
+        .perseus-body h4 { font-size: 0.85rem; margin: 0.4rem 0 0.2rem; color: var(--em); }
+        .perseus-body h5 { font-size: 0.8rem; margin: 0.3rem 0 0.15rem; color: var(--muted); }
         .perseus-body pre {
             background: var(--code-bg);
             padding: 0.5rem;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
             overflow-x: auto;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            margin: 0.3rem 0;
         }
         .perseus-body code {
-            background: var(--code-bg);
+            background: var(--code-inline-bg);
+            color: var(--code-text);
             padding: 0.1rem 0.3rem;
             border-radius: 3px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .perseus-body pre code {
             background: none;
+            color: var(--pre-text);
             padding: 0;
         }
-        .perseus-error { color: var(--error, #ef4444); }
-        .perseus-note { color: var(--muted); font-style: italic; }
-        .perseus-loading { color: var(--muted); }
+        .perseus-body blockquote {
+            border-left: 2px solid var(--accent);
+            margin: 0.3rem 0;
+            padding: 0.2rem 0.6rem;
+            color: var(--muted);
+            font-style: italic;
+        }
+        .perseus-body hr {
+            border: none;
+            border-top: 1px solid var(--border-subtle);
+            margin: 0.5rem 0;
+        }
+        .perseus-body table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            margin: 0.3rem 0;
+        }
+        .perseus-body th, .perseus-body td {
+            padding: 0.25rem 0.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            text-align: left;
+        }
+        .perseus-body th {
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .perseus-body .svc-ok { color: var(--success); }
+        .perseus-body .svc-err { color: var(--error); }
+        .perseus-body .svc-warn { color: var(--warning); }
+        .perseus-error { color: var(--error); padding: 0.5rem 0; }
+        .perseus-note { color: var(--muted); font-style: italic; padding: 0.5rem 0; }
+        .perseus-loading { color: var(--muted); padding: 0.5rem 0; }
+        .perseus-context { word-break: break-word; }
     </style>
     <script src="static/perseus-panel.js?v=__WEBUI_VERSION__"></script>
 </body>

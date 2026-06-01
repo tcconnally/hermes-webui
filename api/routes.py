@@ -4166,7 +4166,38 @@ def handle_get(handler, parsed) -> bool:
 
     if parsed.path == "/api/perseus/services":
         from api.perseus_context import get_services
-        return j(handler, get_services())
+        workspace = parse_qs(parsed.query).get("workspace", [None])[0]
+        return j(handler, get_services(workspace))
+
+    if parsed.path == "/api/perseus/memory/search":
+        from api.perseus_context import search_memory
+        q = parse_qs(parsed.query)
+        query = q.get("q", [""])[0]
+        limit = int(q.get("limit", ["10"])[0])
+        return j(handler, search_memory(query, limit))
+
+    if parsed.path == "/api/perseus/sessions":
+        from api.perseus_context import get_sessions
+        workspace = parse_qs(parsed.query).get("workspace", [None])[0]
+        limit = int(parse_qs(parsed.query).get("limit", ["20"])[0])
+        return j(handler, get_sessions(workspace, limit))
+
+    if parsed.path == "/api/perseus/tasks":
+        from api.perseus_context import get_tasks
+        q = parse_qs(parsed.query)
+        workspace = q.get("workspace", [None])[0]
+        status = q.get("status", [None])[0]
+        return j(handler, get_tasks(workspace, status))
+
+    if parsed.path == "/api/perseus/workspaces":
+        from api.perseus_context import get_workspace_status
+        workspace = parse_qs(parsed.query).get("workspace", [None])[0]
+        return j(handler, get_workspace_status(workspace))
+
+    if parsed.path == "/api/perseus/inject":
+        from api.perseus_context import get_context_injection
+        workspace = parse_qs(parsed.query).get("workspace", [None])[0]
+        return j(handler, get_context_injection(workspace))
 
     if parsed.path == "/api/models":
         return j(handler, get_available_models())
